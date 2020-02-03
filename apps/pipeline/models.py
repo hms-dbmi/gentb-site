@@ -474,6 +474,7 @@ class ProgramRun(TimeStampedModel):
     piperun = ForeignKey(PipelineRun, related_name='programs', on_delete=CASCADE)
     program = ForeignKey(Program, related_name='runs', null=True, on_delete=SET_NULL)
     job_id = SlugField(max_length=255, help_text="Name or ID of the job in the cloud runner")
+    batch_id = SlugField(max_length=255, help_text="The ID of the job in Batch")
 
     previous_id = SlugField(max_length=255, null=True, blank=True,\
         help_text="Name or ID of the previous job we depend on")
@@ -599,7 +600,7 @@ class ProgramRun(TimeStampedModel):
     def job_submit(self, cmd, **kwargs):
         """Actually submit job to job_manager"""
         job_manager = get_job_manager()
-        job_manager.submit(self.job_id, cmd, **kwargs)
+        self.batch_id = job_manager.submit(self.job_id, cmd, **kwargs)
 
     def job_clean(self):
         """Remove old command files"""
