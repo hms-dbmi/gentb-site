@@ -14,7 +14,7 @@
       {% for form in view.forms %}
         <tr>
           <td>
-            <a class="btn btn-{{ form.btn|default:"success" }}" href="{% url "predict:upload" form.my_file_type %}" {% if not form.enabled %} disabled{% endif %}>
+            <a class="btn btn-{{ form.btn|default:'success' }}" href="{% url 'predict:upload' form.my_file_type %}" {% if not form.enabled %} disabled{% endif %}>
               <img src="{% static form.icon %}"/>
             </a>
           </td>

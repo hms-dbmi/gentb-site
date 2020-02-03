@@ -1,3 +1,10 @@
+# Ignore locally utilized Docker resources
+docker-compose.override.yml
+docker-sync.yml
+
+# Ensure GenTb bin is tracked
+!bin
+
 rc-systemd
 prod
 prodenv

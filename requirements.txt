@@ -1,3 +1,21 @@
-# This file is here because many Platforms as a Service look for
-#	requirements.txt in the root directory of a project.
--r requirements/local.txt
+django==2.2.4
+bpython==0.13
+croniter>=0.3.12
+django-braces==1.11.0
+django-media-fixtures==0.0.3
+django-model-utils==3.1.1
+django-spaghetti-and-meatballs==0.2.2
+django-admin-sortable2==0.6.19
+django-health-check==2.4.0
+requests-file==1.1
+requests-ftp==0.3.1
+logutils==0.3.3
+requests>=2.20.0
+chore>=0.8.8
+pytz==2015.4
+jsonfield>=1
+GitPython==2.1.7
+psycopg2-binary>=2.8.3
+PyVCF==0.6.8
+python-crontab>=2.0.1
+supervisor>=3.1

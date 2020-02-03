@@ -49,12 +49,11 @@ urlpatterns = [ # pylint: disable=invalid-name
     url(r'^genes/', include('apps.mutations.urls')),
     url(r'^maps/', include('apps.maps.urls')),
 
+    url(r'^healthcheck/?', include('health_check.urls')),
     path('version/', Version.as_view(), name='version'),
 ]
 
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
     import debug_toolbar
     urlpatterns.append(url(r'^__debug__/', include(debug_toolbar.urls)))

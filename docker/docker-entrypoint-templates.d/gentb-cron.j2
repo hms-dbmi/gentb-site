@@ -1,0 +1,24 @@
+# Set shell properties
+SHELL=/bin/bash
+BASH_ENV=/cron.env
+
+# ------------------------------------------------
+# Download files from new dropbox links (every 15 minutes)
+# ------------------------------------------------
+*/15 * * * * root /usr/local/bin/python {{ DBMI_APP_ROOT }}/manage.py process_uploads > /proc/1/fd/1 2>&1
+#
+# ------------------------------------------------
+# See if there are new predict datasets ready for submission (every 1 minute)
+# ------------------------------------------------
+* * * * * root /usr/local/bin/python {{ DBMI_APP_ROOT }}/manage.py submit_predict > /proc/1/fd/1 2>&1
+#
+#
+# ------------------------------------------------
+# See if there are files ready for pipeline processing (every 15 seconds)
+# ------------------------------------------------
+* * * * * root /usr/local/bin/python {{ DBMI_APP_ROOT }}/manage.py run_pipeline > /proc/1/fd/1 2>&1
+* * * * * root sleep 15 ; /usr/local/bin/python {{ DBMI_APP_ROOT }}/manage.py run_pipeline > /proc/1/fd/1 2>&1
+* * * * * root sleep 30 ; /usr/local/bin/python {{ DBMI_APP_ROOT }}/manage.py run_pipeline > /proc/1/fd/1 2>&1
+* * * * * root sleep 45 ; /usr/local/bin/python {{ DBMI_APP_ROOT }}/manage.py run_pipeline > /proc/1/fd/1 2>&1
+
+# An empty line is required at the end of this file for a valid cron file.

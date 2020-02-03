@@ -49,7 +49,7 @@
   "fields": {
     "name": "Pair-Ended SAM Maker",
     "description": "Use Stampy to turn two fastq files into a single sam file.",
-    "command_line": "${bin}/stampy/stampy.py -g ${h37rv} -h ${h37rv} -o @{file}.sam -f sam -M ${file_one}.fast[aq] ${file_two}.fast[aq]",
+    "command_line": "stampy -g ${h37rv} -h ${h37rv} -o @{file}.sam -f sam -M ${file_one}.fast[aq] ${file_two}.fast[aq]",
     "keep": true,
     "files": [
       1
@@ -89,7 +89,7 @@
   "fields": {
     "name": "VCF",
     "description": "Use Platypus to create a Call Variant file from the indexed BAM file.",
-    "command_line": "${bin}platypus callVariants --bamFiles=${file}.sorted.bam --refFile=${h37rv}.fasta --output=@{file}.vcf",
+    "command_line": "platypus callVariants --bamFiles=${file}.sorted.bam --refFile=${h37rv}.fasta --output=@{file}.vcf",
     "keep": true,
     "files": [
       1
@@ -103,7 +103,7 @@
   "fields": {
     "name": "Single-Ended SAM Maker",
     "description": "Use Stampy to turn a fastq file into a sam file.",
-    "command_line": "${bin}stampy.py -g ${h37rv} -h ${h37rv} -o @{file}.sam -f sam -M ${file}.fastq",
+    "command_line": "stampy -g ${h37rv} -h ${h37rv} -o @{file}.sam -f sam -M ${file}.fastq",
     "keep": true,
     "files": [
       1
@@ -381,6 +381,60 @@
     "name": "spoldb",
     "store": "pipeline/files/spoldb4_simple.txt",
     "description": "Simple Spoligotype DB4"
+  }
+},
+{
+  "model": "pipeline.programfile",
+  "pk": 16,
+  "fields": {
+    "name": "test_fastq_1",
+    "store": "pipeline/files/TDR_3_S156_L002_R1_001.fastq.gz",
+    "description": "Test file (1/2) for improved megapipe."
+  }
+},
+{
+  "model": "pipeline.programfile",
+  "pk": 17,
+  "fields": {
+    "name": "test_fastq_2",
+    "store": "pipeline/files/TDR_3_S156_L002_R2_001.fastq_PAKtQ28.gz",
+    "description": "Test file (2/2) for improved megapipe."
+  }
+},
+{
+  "model": "pipeline.programfile",
+  "pk": 18,
+  "fields": {
+    "name": "tb_ref_genome",
+    "store": "pipeline/files/TBRefGen.fasta",
+    "description": "Reference genome for myobacterium tuberculosis in FASTA format."
+  }
+},
+{
+  "model": "pipeline.programfile",
+  "pk": 19,
+  "fields": {
+    "name": "tb_ref_genome_index",
+    "store": "pipeline/files/TBRef.mmi",
+    "description": "minimap2 index file for myobacterium tuberculosis reference genome."
+  }
+},
+{
+  "model": "pipeline.programfile",
+  "pk": 20,
+  "fields": {
+    "name": "coll-lineage",
+    "store": "pipeline/files/coll.tsv",
+    "description": "Reference lineage data for calculating the lineage with Luca's fast-lineage-caller-vcf.py"
+  }
+},
+{
+  "model": "pipeline.programfile",
+  "pk": 21,
+  "fields": {
+    "name": "lineage_variants",
+    "store": "pipeline/files/lineage_snp_mf.csv",
+    "description": "a list of lineage variants in known resistance regions"
   }
 },
 {

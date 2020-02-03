@@ -28,11 +28,6 @@ from tb_website.settings import MOD_VERSION, MOD_PACKAGE
 # contents of directories change.
 if os.path.exists('MANIFEST'): os.remove('MANIFEST')
 
-# Move local settings template away
-if os.path.isfile('tb_website/settings/local.py'):
-    sys.stderr.write("Refusing to do anything while there is a local.py settings file.\n")
-    sys.exit(2)
-
 setup(
     name             = MOD_PACKAGE,
     version          = MOD_VERSION,
@@ -88,7 +83,6 @@ tb_website.templatetags
     scripts=[os.path.join('bin', a) for a in os.listdir('bin')],
     install_requires = [
         'logutils==0.3.3',
-        'mysqlclient==1.4.4',
         'Django==2.2.4',
         'PyVCF==0.6.8',
         'django-model-utils==3.1.1',

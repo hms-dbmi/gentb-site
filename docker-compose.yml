@@ -1,0 +1,90 @@
+version: '2.3'
+services:
+  gentb:
+    build:
+      dockerfile: Dockerfile
+      context: ./
+      args:
+        BUILD_ENV: local
+    volumes:
+      - ./:/var/gentb/app
+      - gentb:/mnt/gentb
+      - static:/var/gentb/static
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "8082:8082"
+    environment:
+      # Dev settings
+      DBMI_ENV: local
+      AWS_ACCESS_KEY_ID: this-is-a-dummy-key-id
+      AWS_SECRET_ACCESS_KEY: this-is-a-dummy-secret-key
+      GUNICORN_CMD_ARGS: '--log-level info --reload --access-logfile /var/log/gunicorn.log'
+
+      # Image settings
+      DBMI_SSL: ''
+      DBMI_LB: ''
+      DBMI_CREATE_SSL: ''
+      DBMI_PORT: 8082
+      DBMI_APP_DOMAIN: localhost
+      DBMI_DEBUG: 'true'
+
+      # GenTb settings
+      GENTB_ADMINS: 'Bryan:bryan_larson@hms.harvard.edu'
+      GENTB_SECRET_KEY: awdkuhd29832jfewEIFJ2093i429&#@rh2nFBWEUbf2@fn3
+      GENTB_DEBUG: 'true'
+      GENTB_DB_PASSWORD: tmEqWELhq6ThfbrM
+      GENTB_DB_HOST: db
+      GENTB_DB_PORT: 5432
+      GENTB_DB_ENGINE: django.contrib.gis.db.backends.postgis
+      GENTB_SHARED_ROOT: /mnt/gentb
+      ALLOWED_HOSTS: '*'
+      GENTB_INITIAL_EMAIL: bryan_larson@hms.harvard.edu
+      GENTB_INITIAL_PASSWORD: tmEqWELhq6ThfbrM
+      GENTB_EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+      GENTB_EMAIL_PORT: 1025
+      GENTB_EMAIL_HOST: mail
+      GENTB_DROPBOX_ACCESS_TOKEN: this-is-a-dummy-token
+      GENTB_DROPBOX_APP_KEY: this-is-a-dummy-app-key
+      GENTB_FILE_STORAGE: django.core.files.storage.FileSystemStorage
+      GENTB_PIPELINE_MODULE: chore.local.DockerJobManager
+      GENTB_PIPELINE_TEST: 'true'
+      GENTB_PIPELINE_JOB_QUEUE: this-is-not-used
+      GENTB_PIPELINE_JOB_DEFINITION: python:2.7-slim
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget --quiet --tries=1 --spider http://localhost:8082/healthcheck || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mdillon/postgis
+    environment:
+      POSTGRES_DB: 'gentb'
+      POSTGRES_USER: 'gentb'
+      POSTGRES_PASSWORD: 'tmEqWELhq6ThfbrM'
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gentb"]
+      interval: 15s
+      timeout: 5s
+      retries: 15
+
+  mail:
+    image: mailhog/mailhog
+    ports:
+      - "4517:1025"
+      - "4518:8025"
+    healthcheck:
+      test: wget -s -q http://localhost:8025 || exit 1
+      interval: 30s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  gentb:
+  static:

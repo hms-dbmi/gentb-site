@@ -546,6 +546,13 @@ class ProgramRun(TimeStampedModel):
             if follower is not None:
                 job_kwargs['provide'] = self.follower_id = follower.job_id
 
+            # We need to include some additional information for Batch/Docker
+            job_kwargs.update({
+                'files_path': settings.TB_SHARED_DATAFILE_DIRECTORY,
+                'input_files': [f for f in self.input_filenames() if settings.TB_SHARED_DATAFILE_DIRECTORY in f],
+                'output_files': [f for f in self.output_filenames() if settings.TB_SHARED_DATAFILE_DIRECTORY in f],
+            })
+
             self.is_submitted = True
             self.submitted = now()
 
@@ -559,6 +566,7 @@ class ProgramRun(TimeStampedModel):
                 self.save()
 
         except (JobSubmissionError, PrepareError) as err:
+            logging.exception('Job/{} error: {}'.format(self.job_id, err), exc_info=True)
             self.is_error = True
             self.error_text = str(err)
             self.kwargs = {}
