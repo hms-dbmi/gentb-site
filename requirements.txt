@@ -1,6 +1,7 @@
 django==2.2.4
 bpython==0.13
 croniter>=0.3.12
+django-amazon-ses==3.0.2
 django-braces==1.11.0
 django-media-fixtures==0.0.3
 django-model-utils==3.1.1

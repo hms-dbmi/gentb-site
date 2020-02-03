@@ -62,7 +62,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 ########## EMAIL CONFIGURATION
 # See: https://docs.djangoproject.com/en/1.11/ref/settings/#email-backend
-EMAIL_BACKEND = environment.get_str('GENTB_EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
+EMAIL_BACKEND = environment.get_str('GENTB_EMAIL_BACKEND', default='django_amazon_ses.EmailBackend')
 EMAIL_HOST = environment.get_str('GENTB_EMAIL_HOST', default='')
 EMAIL_PORT = environment.get_int('GENTB_EMAIL_PORT', default=587)
 EMAIL_HOST_USER = environment.get_str('GENTB_EMAIL_USER', default='')

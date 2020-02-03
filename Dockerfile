@@ -67,9 +67,15 @@ ADD docker/docker-entrypoint-resources.d/ /docker-entrypoint-resources.d/
 ADD docker/docker-entrypoint-init.d/ /docker-entrypoint-init.d/
 ADD docker/docker-entrypoint.d/ /docker-entrypoint.d/
 
-# Select runtime scripts based on environment
+# Select runtime scripts/resources based on environment
+RUN if test -d ${APP_ROOT}/docker/docker-entrypoint-templates${BUILD_ENV+-$BUILD_ENV}.d; then \
+    cp -rf ${APP_ROOT}/docker/docker-entrypoint-templates${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-templates.d/; fi
+RUN if test -d ${APP_ROOT}/docker/docker-entrypoint-resources${BUILD_ENV+-$BUILD_ENV}.d; then \
+    cp -rf ${APP_ROOT}/docker/docker-entrypoint-resources${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-resources.d/; fi
 RUN if test -d ${APP_ROOT}/docker/docker-entrypoint-init${BUILD_ENV+-$BUILD_ENV}.d; then \
-    cp -n ${APP_ROOT}/docker/docker-entrypoint-init${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-init.d/; fi
+    cp -rf ${APP_ROOT}/docker/docker-entrypoint-init${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-init.d/; fi
+RUN if test -d ${APP_ROOT}/docker/docker-entrypoint${BUILD_ENV+-$BUILD_ENV}.d; then \
+    cp -rf ${APP_ROOT}/docker/docker-entrypoint${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint.d/; fi
 
 # Set app parameters. These can be overridden in the ECS Task Definition's container environment variables.
 ENV DBMI_ENV=${BUILD_ENV}
@@ -95,13 +101,6 @@ ENV DBMI_LB=true
 ENV DBMI_SSL=true
 ENV DBMI_CREATE_SSL=true
 ENV DBMI_HEALTHCHECK=true
-
-# Copy bin directory for pipeline jobs
-# This is likely a temporary measure since these
-# will be provided as a part of the gentb-job image
-# But for now we need them accessible by GenTb
-# so it can build the job command
-ADD bin ${DBMI_APP_MEDIA_ROOT}bin
 
 # Add the init script and make it executable
 ADD docker/docker-entrypoint.sh /docker-entrypoint.sh
