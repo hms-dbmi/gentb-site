@@ -40,7 +40,7 @@ services:
       ALLOWED_HOSTS: '*'
       GENTB_INITIAL_EMAIL: bryan_larson@hms.harvard.edu
       GENTB_INITIAL_PASSWORD: tmEqWELhq6ThfbrM
-      GENTB_EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+      GENTB_EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
       GENTB_EMAIL_PORT: 1025
       GENTB_EMAIL_HOST: mail
       GENTB_DROPBOX_ACCESS_TOKEN: this-is-a-dummy-token

@@ -63,44 +63,43 @@ COPY ./ ${APP_ROOT}
 
 # Copy scripts, templates and resources
 ADD docker/docker-entrypoint-templates.d/ /docker-entrypoint-templates.d/
-ADD docker/docker-entrypoint-resources.d/ /docker-entrypoint-resources.d/
 ADD docker/docker-entrypoint-init.d/ /docker-entrypoint-init.d/
 ADD docker/docker-entrypoint.d/ /docker-entrypoint.d/
 
-# Select runtime scripts/resources based on environment
+# Select runtime scripts/templates based on environment
 RUN if test -d ${APP_ROOT}/docker/docker-entrypoint-templates${BUILD_ENV+-$BUILD_ENV}.d; then \
     cp -rf ${APP_ROOT}/docker/docker-entrypoint-templates${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-templates.d/; fi
-RUN if test -d ${APP_ROOT}/docker/docker-entrypoint-resources${BUILD_ENV+-$BUILD_ENV}.d; then \
-    cp -rf ${APP_ROOT}/docker/docker-entrypoint-resources${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-resources.d/; fi
 RUN if test -d ${APP_ROOT}/docker/docker-entrypoint-init${BUILD_ENV+-$BUILD_ENV}.d; then \
     cp -rf ${APP_ROOT}/docker/docker-entrypoint-init${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint-init.d/; fi
 RUN if test -d ${APP_ROOT}/docker/docker-entrypoint${BUILD_ENV+-$BUILD_ENV}.d; then \
     cp -rf ${APP_ROOT}/docker/docker-entrypoint${BUILD_ENV+-$BUILD_ENV}.d/* /docker-entrypoint.d/; fi
 
-# Set app parameters. These can be overridden in the ECS Task Definition's container environment variables.
+# Declare environment needed to configure and run app. These can be overridden in the
+# ECS Task Definition's container environment variables as well as by values that
+# were acquired via Secrets Manager
+
+# Set app parameters.
 ENV DBMI_ENV=${BUILD_ENV}
 ENV DBMI_SECRET_MANAGER_ID=/dbmi/gentb/${DBMI_ENV}
 ENV DBMI_AWS_REGION=us-east-1
 ENV DBMI_APP_WSGI=tb_website
 ENV DBMI_APP_ROOT=${APP_ROOT}
-ENV DBMI_APP_DB=true
 ENV DBMI_APP_DOMAIN=gentb.hms.harvard.edu
 
 # Static and media files
-ENV DBMI_STATIC_FILES=true
 ENV DBMI_APP_STATIC_URL_PATH=/static/
 ENV DBMI_APP_STATIC_ROOT=/var/gentb/static/
-ENV DBMI_MEDIA_FILES=true
 ENV DBMI_APP_MEDIA_URL_PATH=/media/
 ENV DBMI_APP_MEDIA_ROOT=/mnt/gentb/
 ENV DBMI_GUNICORN_SOCKET=/var/gentb/gunicorn.sock
 
 # Set nginx and network parameters
-ENV DBMI_PORT=443
+ENV DBMI_PORT=80
 ENV DBMI_LB=true
-ENV DBMI_SSL=true
-ENV DBMI_CREATE_SSL=true
-ENV DBMI_HEALTHCHECK=true
+ENV DBMI_NGINX_USER=www-data
+ENV DBMI_NGINX_PID_PATH=/var/run/nginx.pid
+ENV DBMI_HEALTHCHECK_PATH=/healthcheck
+ENV DBMI_APP_HEALTHCHECK_PATH=/healthcheck
 
 # Add the init script and make it executable
 ADD docker/docker-entrypoint.sh /docker-entrypoint.sh

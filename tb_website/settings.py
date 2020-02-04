@@ -58,6 +58,8 @@ INTERNAL_CALLBACK_SITE_URL = ''
 
 # http://django-debug-toolbar.readthedocs.org/en/latest/installation.html
 INTERNAL_IPS = ('127.0.0.1',)
+
+SITE_DOMAIN = environment.get_list('DBMI_APP_DOMAIN', required=True)
 ########## END ADDRESS CONFIGURATION
 
 ########## EMAIL CONFIGURATION
@@ -67,10 +69,9 @@ EMAIL_HOST = environment.get_str('GENTB_EMAIL_HOST', default='')
 EMAIL_PORT = environment.get_int('GENTB_EMAIL_PORT', default=587)
 EMAIL_HOST_USER = environment.get_str('GENTB_EMAIL_USER', default='')
 EMAIL_HOST_PASSWORD = environment.get_str('GENTB_EMAIL_PASSWORD', default='')
-DEFAULT_FROM_EMAIL = environment.get_str('GENTB_EMAIL_FROM', default='admin@gentb.hms.harvard.edu')
-EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = environment.get_str('GENTB_EMAIL_FROM', default='admin@{}'.format(SITE_DOMAIN))
 # See: https://docs.djangoproject.com/en/1.11/ref/settings/#server-email
-SERVER_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
 ########## END EMAIL CONFIGURATION
 
 ########## DATABASE CONFIGURATION
@@ -80,8 +81,8 @@ DATABASES = {
         'ENGINE': environment.get_str('GENTB_DB_ENGINE', default='django.contrib.gis.db.backends.postgis'),
         'NAME': environment.get_str('GENTB_DB_NAME', default='gentb'),
         'USER': environment.get_str('GENTB_DB_USER', default='gentb'),
-        'PASSWORD': environment.get_str('GENTB_DB_PASSWORD'),
-        'HOST': environment.get_str('GENTB_DB_HOST'),
+        'PASSWORD': environment.get_str('GENTB_DB_PASSWORD', required=True),
+        'HOST': environment.get_str('GENTB_DB_HOST', required=True),
         'PORT': environment.get_str('GENTB_DB_PORT', default='3306'),
         #'OPTIONS':  "SET sql_mode='STRICT_TRANS_TABLES';",
     }

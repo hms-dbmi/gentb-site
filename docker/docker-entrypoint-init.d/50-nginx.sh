@@ -13,59 +13,6 @@ if [[ -n $DBMI_LB ]]; then
 
 fi
 
-# Check for self signed
-if [[ -n "$DBMI_CREATE_SSL" ]]; then
-
-    # Set defaults
-    export DBMI_SSL_PATH=${DBMI_SSL_PATH:=/etc/nginx/ssl}
-    DBMI_APP_DOMAIN=${DBMI_APP_DOMAIN:=localhost}
-
-    # Set the wildcarded domain we want to use
-    commonname="*.${DBMI_APP_DOMAIN}"
-
-    # Ensure the directory exists
-    mkdir -p ${DBMI_SSL_PATH}
-
-    # A blank passphrase
-    passphrase="$(openssl rand -base64 15)"
-    country=US
-    state=Massachusetts
-    locality=Boston
-    organization=HMS
-    organizationalunit=DBMI
-    email=admin@hms.harvard.edu
-
-    # Generate our Private Key, CSR and Certificate
-    openssl genrsa -out "${DBMI_SSL_PATH}/${DBMI_APP_DOMAIN}.key" 2048
-    openssl req -new -key "${DBMI_SSL_PATH}/${DBMI_APP_DOMAIN}.key" -out "${DBMI_SSL_PATH}/${DBMI_APP_DOMAIN}.csr" -passin pass:${passphrase} -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-    openssl x509 -req -days 365 -in "${DBMI_SSL_PATH}/${DBMI_APP_DOMAIN}.csr" -signkey "${DBMI_SSL_PATH}/${DBMI_APP_DOMAIN}.key" -out "${DBMI_SSL_PATH}/${DBMI_APP_DOMAIN}.crt"
-
-fi
-
-if [[ -n "$DBMI_SSL" ]]; then
-
-    # Set defaults
-    export DBMI_SSL_PATH=${DBMI_SSL_PATH:=/etc/nginx/ssl}
-
-    # Ensure the directory exists
-    mkdir -p ${DBMI_SSL_PATH}
-
-    # Also create a wildcard certificate for errant requests
-    passphrase="$(openssl rand -base64 15)"
-    commonname="*"
-    country=US
-    state=Massachusetts
-    locality=Boston
-    organization=Nothing
-    organizationalunit=Default
-    email=nothing@default.com
-    openssl genrsa -out "${DBMI_SSL_PATH}/default.key" 2048
-    openssl req -new -key "${DBMI_SSL_PATH}/default.key" -out "${DBMI_SSL_PATH}/default.csr" -passin pass:${passphrase} -subj "/C=$country/ST=$state/L=$locality/O=$organization/OU=$organizationalunit/CN=$commonname/emailAddress=$email"
-    openssl x509 -req -days 365 -in "${DBMI_SSL_PATH}/default.csr" -signkey "${DBMI_SSL_PATH}/default.key" -out "${DBMI_SSL_PATH}/default.crt"
-
-fi
-
 # Setup the nginx and site configuration
 j2 /docker-entrypoint-templates.d/nginx.healthcheck.conf.j2 > /etc/nginx/conf.d/nginx.healthcheck.conf
-j2 /docker-entrypoint-templates.d/nginx.proxy.conf.j2 > /etc/nginx/conf.d/nginx.proxy.conf
 j2 /docker-entrypoint-templates.d/nginx.conf.j2 > /etc/nginx/nginx.conf

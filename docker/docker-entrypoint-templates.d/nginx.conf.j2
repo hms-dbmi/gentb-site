@@ -51,19 +51,10 @@ http {
     }
 
     server {
-    {% if DBMI_SSL is defined and DBMI_SSL %}
-
-        listen {{ DBMI_PORT }} ssl default_server;
-        ssl_certificate "{{ DBMI_SSL_PATH }}/default.crt";
-        ssl_certificate_key "{{ DBMI_SSL_PATH }}/default.key";
-
-    {% else %}
 
         listen {{ DBMI_PORT }} default_server;
 
-    {% endif %}
-
-    {% if DBMI_HEALTHCHECK is defined and DBMI_HEALTHCHECK %}
+    {% if DBMI_HEALTHCHECK_PATH is defined and DBMI_HEALTHCHECK_PATH %}
         include /etc/nginx/conf.d/nginx.healthcheck.conf;
     {% endif %}
 
@@ -77,23 +68,11 @@ http {
     }
 
     server {
-    {% if DBMI_SSL is defined and DBMI_SSL %}
-        listen {{ DBMI_PORT }} ssl;
-        server_name .{{ DBMI_APP_DOMAIN }};
-
-        ssl_certificate "{{ DBMI_SSL_PATH }}/{{ DBMI_APP_DOMAIN }}.crt";
-        ssl_certificate_key "{{ DBMI_SSL_PATH }}/{{ DBMI_APP_DOMAIN }}.key";
-
-        error_page 497 https://$host:{{ DBMI_PORT }}$request_uri;
-
-    {% else %}
 
         listen {{ DBMI_PORT }};
         server_name .{{ DBMI_APP_DOMAIN }};
 
-    {% endif %}
-
-    {% if DBMI_HEALTHCHECK is defined and DBMI_HEALTHCHECK %}
+    {% if DBMI_HEALTHCHECK_PATH is defined and DBMI_HEALTHCHECK_PATH %}
         include /etc/nginx/conf.d/nginx.healthcheck.conf;
     {% endif %}
 
@@ -108,19 +87,12 @@ http {
         real_ip_header X-Forwarded-For;
         real_ip_recursive on;
 
-        {% if DBMI_SSL is defined and DBMI_SSL %}
-        # If load balanced, check the original protocol and redirect accordingly
-        if ($http_x_forwarded_proto = 'http') {
-             return 301 https://$host$request_uri;
-        }
-        {% endif %}
-
     {% endif %}
 
         location = /favicon.ico { access_log off; log_not_found off; }
         location = /robots.txt  { access_log off; log_not_found off; }
 
-    {% if DBMI_STATIC_FILES is defined and DBMI_STATIC_FILES %}
+    {% if DBMI_APP_STATIC_ROOT is defined and DBMI_APP_STATIC_ROOT %}
         location {{ DBMI_APP_STATIC_URL_PATH }} {
             autoindex on;
             alias {{ DBMI_APP_STATIC_ROOT }};
@@ -130,15 +102,11 @@ http {
         }
     {% endif %}
 
-    {% if DBMI_MEDIA_FILES is defined and DBMI_MEDIA_FILES %}
+    {% if DBMI_APP_MEDIA_ROOT is defined and DBMI_APP_MEDIA_ROOT %}
         location {{ DBMI_APP_MEDIA_URL_PATH }} {
             autoindex on;
             alias {{ DBMI_APP_MEDIA_ROOT }};
         }
-    {% endif %}
-
-    {% if DBMI_FILE_PROXY is defined and DBMI_FILE_PROXY %}
-        include /etc/nginx/conf.d/nginx.proxy.conf;
     {% endif %}
 
         location / {
